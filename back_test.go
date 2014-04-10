@@ -29,4 +29,5 @@ func TestRPC(t *testing.T) {
 	c := triblab.NewClient(addr)
 
 	tribtest.CheckStorage(t, c)
+
 }
