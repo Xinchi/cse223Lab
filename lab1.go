@@ -10,14 +10,7 @@ import (
 
 // Creates an RPC client that connects to addr.
 func NewClient(addr string) trib.Storage {
-	c := Client{addr: addr}
-	/*
-		if c.Connect() != nil {
-			fmt.Println("fail to connect")
-			//handle for connection failure
-		}
-	*/
-	return &c
+	return &Client{addr: addr}
 }
 
 // Serve as a backend based on the given configuration
