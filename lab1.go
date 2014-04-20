@@ -1,7 +1,6 @@
 package triblab
 
 import (
-	"fmt"
 	"net"
 	"net/http"
 	"net/rpc"
@@ -10,23 +9,24 @@ import (
 
 // Creates an RPC client that connects to addr.
 func NewClient(addr string) trib.Storage {
-	return &Client{addr: addr}
+	return &Client{Addr: addr}
 }
 
 // Serve as a backend based on the given configuration
 func ServeBack(b *trib.BackConfig) error {
-	e := rpc.Register(b.Store)
+	server := rpc.NewServer()
+	server.Register(b.Store)
+	server.HandleHTTP(rpc.DefaultRPCPath, rpc.DefaultDebugPath)
+	listener, e := net.Listen("tcp", b.Addr)
 	if e != nil {
-		fmt.Println(e)
+		if b.Ready != nil {
+			b.Ready <- false
+		}
 		return e
 	}
-	rpc.HandleHTTP()
-	s, e := net.Listen("tcp", b.Addr)
-	if e != nil {
-		fmt.Println("server tcp error:", e)
-	} else {
-		go http.Serve(s, nil)
+	if b.Ready != nil {
 		b.Ready <- true
 	}
+	http.Serve(listener, nil)
 	return nil
 }
