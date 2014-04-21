@@ -27,6 +27,6 @@ func ServeBack(b *trib.BackConfig) error {
 	if b.Ready != nil {
 		b.Ready <- true
 	}
-	http.Serve(listener, nil)
-	return nil
+	return http.Serve(listener, nil)
+	// return nil
 }
