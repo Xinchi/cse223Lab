@@ -3,6 +3,7 @@ package triblab
 import (
 	"net/rpc"
 	"trib"
+	"sync"
 )
 
 type Client struct {
@@ -12,9 +13,12 @@ type Client struct {
 type Connection struct {
 	conn       *rpc.Client
 	is_connect bool
+	lock sync.Mutex
 }
 
 func (self *Connection) connect(addr string) error {
+	self.lock.Lock()
+	defer self.lock.Unlock()
 	var e error
 	if !self.is_connect {
 		self.conn, e = rpc.DialHTTP("tcp", addr)

@@ -11,6 +11,7 @@ type Client2 struct {
 	Addr string
 	BinName string
 	Client trib.Storage
+	Escaped_Prefix string
 }
 
 // type Connection struct {
@@ -54,9 +55,16 @@ type Client2 struct {
 // 	return stub(self.Addr, "Storage.Get", key2, value)
 // }
 
+
+// func getPrefix() string{
+// 	return colon.Escape(self.BinName)+"::"
+// }
 func (self *Client2) Get(key string, value *string) error {
 	//process key
+
+
 	key2 := colon.Escape(self.BinName)+"::"+colon.Escape(key)
+
 	return self.Client.Get(key2, value);
 }
 
@@ -110,7 +118,10 @@ func (self *Client2) ListKeys(p *trib.Pattern, list *trib.List) error {
 
 	e := self.Client.ListKeys(p, list);
 	for i,_ := range list.L{
-		list.L[i] = strings.TrimLeft(list.L[i], colon.Escape(self.BinName)+"::")
+
+		list.L[i] = list.L[i][len(colon.Escape(self.BinName)+"::"):]
+
+		list.L[i] = colon.Unescape(list.L[i])
 	}
 
 	return e
